@@ -168,17 +168,13 @@
         <div class="login-card">
           <div class="login-icon">🔐</div>
           <h3>Entrar no painel</h3>
-          <p>Use o usuário administrador criado no Firebase Authentication.</p>
+          <p>Digite somente a senha administrativa.</p>
           <form id="adminLoginForm">
             <label>
-              <span>E-mail</span>
-              <input id="adminEmail" type="email" autocomplete="username" required placeholder="admin@exemplo.com">
+              <span>Senha do painel</span>
+              <input id="adminPassword" type="password" autocomplete="current-password" required placeholder="Digite a senha">
             </label>
-            <label>
-              <span>Senha</span>
-              <input id="adminPassword" type="password" autocomplete="current-password" required placeholder="••••••••">
-            </label>
-            <button class="action dark" id="adminLoginButton" type="submit">Entrar</button>
+            <button class="action dark" id="adminLoginButton" type="submit">Entrar no painel</button>
             <div class="form-status" id="adminLoginStatus" role="status"></div>
           </form>
         </div>

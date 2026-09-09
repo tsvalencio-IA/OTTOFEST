@@ -13,7 +13,8 @@ Projeto pronto para GitHub Pages + Firebase Firestore.
 - Dúvidas salvas no Firestore.
 - Painel administrativo escondido:
   - toque **3 vezes** em `desenvolvido por thIAguinho Soluções Digitais`;
-  - login por Firebase Authentication (e-mail/senha);
+  - a tela pede **somente a senha**;
+  - o e-mail técnico do Firebase fica oculto no código;
   - dashboard de confirmações, total de pessoas e dúvidas;
   - dúvidas pendentes/resolvidas;
   - exportação CSV.
@@ -41,7 +42,15 @@ No console Firebase:
 - Authentication → Sign-in method → habilitar **E-mail/senha**.
 - Authentication → Users → criar manualmente o usuário administrador.
 
-Não coloque botão de cadastro público no site. O painel aceita somente os usuários que você criar no Firebase Authentication.
+Use exatamente este e-mail técnico:
+`admin@ottofest.app`
+
+Esse e-mail **não aparece no site**. Ele serve apenas para o Firebase Authentication identificar o administrador.  
+Na tela do convite, depois dos 3 toques no rodapé, aparece somente **Senha do painel**.
+
+Escolha a senha que você quiser ao criar esse usuário no Firebase.
+
+Não coloque botão de cadastro público no site.
 
 ### 2. Crie um aplicativo Web no Firebase
 

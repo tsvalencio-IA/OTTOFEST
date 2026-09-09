@@ -1,4 +1,4 @@
-import { firebaseConfig } from "./firebase-config.js";
+import { firebaseConfig, ADMIN_AUTH_EMAIL } from "./firebase-config.js";
 
 import {
   initializeApp
@@ -41,7 +41,6 @@ const els = {
   adminLoginView: $("adminLoginView"),
   adminDashboardView: $("adminDashboardView"),
   adminLoginForm: $("adminLoginForm"),
-  adminEmail: $("adminEmail"),
   adminPassword: $("adminPassword"),
   adminLoginButton: $("adminLoginButton"),
   adminLoginStatus: $("adminLoginStatus"),
@@ -303,17 +302,21 @@ els.adminLoginForm.addEventListener("submit", async (event) => {
     setStatus(els.adminLoginStatus, "Configure o Firebase primeiro.", "error");
     return;
   }
-  const email = els.adminEmail.value.trim();
   const password = els.adminPassword.value;
+  if (!ADMIN_AUTH_EMAIL || ADMIN_AUTH_EMAIL.includes("COLE_AQUI")) {
+    setStatus(els.adminLoginStatus, "Falta configurar o acesso administrativo no firebase-config.js.", "error");
+    return;
+  }
+
   els.adminLoginButton.disabled = true;
   setStatus(els.adminLoginStatus, "Entrando...");
   try {
-    await signInWithEmailAndPassword(auth, email, password);
+    await signInWithEmailAndPassword(auth, ADMIN_AUTH_EMAIL, password);
     els.adminPassword.value = "";
     setStatus(els.adminLoginStatus, "");
   } catch (error) {
     console.error(error);
-    setStatus(els.adminLoginStatus, "E-mail ou senha inválidos.", "error");
+    setStatus(els.adminLoginStatus, "Senha administrativa inválida.", "error");
   } finally {
     els.adminLoginButton.disabled = false;
   }

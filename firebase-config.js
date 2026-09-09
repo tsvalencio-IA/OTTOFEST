@@ -5,12 +5,12 @@
 // ===============================================================
 
 export const firebaseConfig = {
-  apiKey: "AIzaSyArXXVD0QnJvDdB9QVNc4QrBNTv-h7HtfQ",
-  authDomain: "ottofest-3ca4e.firebaseapp.com",
-  projectId: "ottofest-3ca4e",
-  storageBucket: "ottofest-3ca4e.firebasestorage.app",
-  messagingSenderId: "108804464983",
-  appId: "1:108804464983:web:27e7dc21ec214876315e12"
+  apiKey: "COLE_AQUI",
+  authDomain: "COLE_AQUI.firebaseapp.com",
+  projectId: "COLE_AQUI",
+  storageBucket: "COLE_AQUI.firebasestorage.app",
+  messagingSenderId: "COLE_AQUI",
+  appId: "COLE_AQUI"
 };
 
 // Firestore é usado para:
@@ -18,3 +18,10 @@ export const firebaseConfig = {
 // - collection "questions": dúvidas enviadas pelo convite
 //
 // Authentication (E-mail/senha) é usado APENAS para o painel administrativo.
+
+
+// Login técnico interno do painel.
+// O visitante/admin NÃO digita este e-mail na tela.
+// Crie no Firebase Authentication um usuário com EXATAMENTE este e-mail
+// e escolha a senha que você quiser para o painel.
+export const ADMIN_AUTH_EMAIL = "admin@ottofest.app";
