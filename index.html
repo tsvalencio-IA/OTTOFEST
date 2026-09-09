@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffddef">
+  <meta name="description" content="Convite interativo do aniversário de 7 anos do Otto.">
+  <title>Otto 7 anos • Convite</title>
+  <link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="sky" aria-hidden="true">
+    <span class="cloud c1"></span><span class="cloud c2"></span><span class="cloud c3"></span>
+  </div>
+
+  <main class="app-shell">
+    <section class="hero" id="inicio">
+      <div class="hero-top">
+        <button class="character-button" id="kirbyButton" type="button" aria-label="Tocar no Kirby">
+          <img src="./assets/kirby.jpg" alt="Kirby, personagem rosa do convite" class="kirby">
+          <span>toque em mim ✨</span>
+        </button>
+
+        <div class="speech" id="kirbySpeech" aria-live="polite">
+          Oi! Tenho um convite muito especial para você!
+        </div>
+      </div>
+
+      <div class="brand-title" aria-label="Otto 7 anos">
+        <span>otto</span>
+        <strong>7 anos</strong>
+      </div>
+
+      <p class="hero-copy">Dia <strong>26/09</strong> vamos comemorar juntos. Toque, descubra e confirme sua presença.</p>
+
+      <div class="star-game" aria-label="Encontre as sete estrelas">
+        <div class="star-game-head">
+          <strong>Encontre as 7 estrelas do Otto</strong>
+          <span id="starCount">0/7 ⭐</span>
+        </div>
+        <div class="stars">
+          <button type="button" class="star" aria-label="Estrela 1">⭐</button>
+          <button type="button" class="star" aria-label="Estrela 2">⭐</button>
+          <button type="button" class="star" aria-label="Estrela 3">⭐</button>
+          <button type="button" class="star" aria-label="Estrela 4">⭐</button>
+          <button type="button" class="star" aria-label="Estrela 5">⭐</button>
+          <button type="button" class="star" aria-label="Estrela 6">⭐</button>
+          <button type="button" class="star" aria-label="Estrela 7">⭐</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="event-card" aria-labelledby="festa-title">
+      <div class="section-eyebrow">O convite</div>
+      <h1 id="festa-title">Aniversário do Otto 🎂</h1>
+      <div class="event-grid">
+        <div class="event-item"><span>📅</span><div><small>Data</small><strong>26/09</strong></div></div>
+        <div class="event-item"><span>🕐</span><div><small>Horário</small><strong>A partir das 13h13</strong></div></div>
+        <div class="event-item wide"><span>📍</span><div><small>Local</small><strong>Chácara da vovó Stela</strong><p>Rua das Acácias, nº 110 – San Fernand Valley</p></div></div>
+      </div>
+      <a class="action secondary" href="https://www.google.com/maps/search/?api=1&query=Rua%20das%20Ac%C3%A1cias%2C%20110%20-%20San%20Fernand%20Valley" target="_blank" rel="noopener noreferrer">
+        📍 Como chegar
+      </a>
+    </section>
+
+    <section class="tips-card">
+      <button class="waddle-button" id="waddleButton" type="button" aria-label="Tocar no Waddle Dee">
+        <img src="./assets/waddle-dee.jpg" alt="Waddle Dee com bandana azul">
+      </button>
+      <div>
+        <div class="section-eyebrow">Antes da festa</div>
+        <h2>Dicas do Waddle Dee</h2>
+        <ul>
+          <li><span>🏊</span> Leve roupa de banho.</li>
+          <li><span>🔥</span> Vamos fazer churrasco — leve algo para assarmos.</li>
+          <li><span>🥤</span> Vai ter suco, mas pode levar sua bebida preferida.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="rsvp-card" id="confirmar">
+      <div class="section-eyebrow">Confirmação</div>
+      <h2>Você vai participar? 💗</h2>
+      <p>Leva menos de 20 segundos. A confirmação fica registrada aqui no convite.</p>
+
+      <form id="rsvpForm" novalidate>
+        <div class="form-grid">
+          <label>
+            <span>Seu nome</span>
+            <input id="rsvpName" name="name" autocomplete="name" maxlength="70" placeholder="Digite seu nome" required>
+          </label>
+          <label>
+            <span>Quantas pessoas vão?</span>
+            <select id="rsvpGuests" name="guests" required>
+              <option value="1">1 pessoa</option>
+              <option value="2">2 pessoas</option>
+              <option value="3">3 pessoas</option>
+              <option value="4">4 pessoas</option>
+              <option value="5">5 pessoas</option>
+              <option value="6">6 pessoas</option>
+              <option value="7">7 pessoas</option>
+              <option value="8">8 pessoas</option>
+            </select>
+          </label>
+        </div>
+        <label>
+          <span>Quer deixar um recado? <em>opcional</em></span>
+          <textarea id="rsvpNote" name="note" maxlength="240" rows="3" placeholder="Ex.: estamos animados para a festa!"></textarea>
+        </label>
+        <input class="honeypot" id="rsvpWebsite" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="action primary" id="rsvpSubmit" type="submit">✅ Confirmar presença</button>
+        <div class="form-status" id="rsvpStatus" role="status" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <section class="question-card" id="duvidas">
+      <div class="section-eyebrow">Ficou com dúvida?</div>
+      <h2>Pergunte por aqui ❓</h2>
+      <p>A pergunta fica registrada no painel administrativo.</p>
+
+      <form id="questionForm" novalidate>
+        <div class="form-grid">
+          <label>
+            <span>Seu nome</span>
+            <input id="questionName" name="name" maxlength="70" placeholder="Digite seu nome" required>
+          </label>
+          <label>
+            <span>Assunto</span>
+            <select id="questionTopic" name="topic">
+              <option value="Localização">📍 Localização</option>
+              <option value="Horário">🕐 Horário</option>
+              <option value="Roupa de banho">🏊 Roupa de banho</option>
+              <option value="Churrasco">🔥 Churrasco</option>
+              <option value="Outro">💬 Outro</option>
+            </select>
+          </label>
+        </div>
+        <label>
+          <span>Sua dúvida</span>
+          <textarea id="questionMessage" name="message" maxlength="500" rows="4" placeholder="Escreva sua dúvida..." required></textarea>
+        </label>
+        <input class="honeypot" id="questionWebsite" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="action dark" id="questionSubmit" type="submit">Enviar dúvida</button>
+        <div class="form-status" id="questionStatus" role="status" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <footer class="footer">
+      <p>Convite interativo do Otto • 7 anos ⭐</p>
+      <button type="button" id="adminSecret" class="signature" aria-label="Desenvolvido por thIAguinho Soluções Digitais">
+        desenvolvido por <strong>thIAguinho Soluções Digitais</strong>
+      </button>
+    </footer>
+  </main>
+
+  <dialog id="adminDialog" class="admin-dialog">
+    <div class="admin-shell">
+      <div class="admin-topbar">
+        <div>
+          <span class="admin-kicker">Área reservada</span>
+          <h2>Painel do aniversário do Otto</h2>
+        </div>
+        <button class="icon-button" id="adminClose" type="button" aria-label="Fechar painel">✕</button>
+      </div>
+
+      <section id="adminLoginView" class="admin-login">
+        <div class="login-card">
+          <div class="login-icon">🔐</div>
+          <h3>Entrar no painel</h3>
+          <p>Use o usuário administrador criado no Firebase Authentication.</p>
+          <form id="adminLoginForm">
+            <label>
+              <span>E-mail</span>
+              <input id="adminEmail" type="email" autocomplete="username" required placeholder="admin@exemplo.com">
+            </label>
+            <label>
+              <span>Senha</span>
+              <input id="adminPassword" type="password" autocomplete="current-password" required placeholder="••••••••">
+            </label>
+            <button class="action dark" id="adminLoginButton" type="submit">Entrar</button>
+            <div class="form-status" id="adminLoginStatus" role="status"></div>
+          </form>
+        </div>
+      </section>
+
+      <section id="adminDashboardView" class="admin-dashboard" hidden>
+        <div class="dashboard-toolbar">
+          <div>
+            <strong id="adminUserLabel">Administrador</strong>
+            <small>dados em tempo real</small>
+          </div>
+          <div class="toolbar-actions">
+            <button class="mini-button" id="exportCsv" type="button">⬇ CSV</button>
+            <button class="mini-button" id="adminLogout" type="button">Sair</button>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <article><span>✅</span><strong id="statRsvps">0</strong><small>confirmações</small></article>
+          <article><span>👥</span><strong id="statPeople">0</strong><small>pessoas</small></article>
+          <article><span>❓</span><strong id="statQuestions">0</strong><small>dúvidas</small></article>
+          <article><span>🟡</span><strong id="statPending">0</strong><small>pendentes</small></article>
+        </div>
+
+        <div class="dashboard-section">
+          <div class="dashboard-section-head">
+            <div><span class="section-eyebrow">Presenças</span><h3>Quem confirmou</h3></div>
+            <input id="rsvpSearch" class="search-input" type="search" placeholder="Buscar nome">
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Nome</th><th>Pessoas</th><th>Recado</th><th>Quando</th></tr></thead>
+              <tbody id="rsvpTableBody"><tr><td colspan="4" class="empty">Nenhuma confirmação ainda.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="dashboard-section">
+          <div class="dashboard-section-head">
+            <div><span class="section-eyebrow">Dúvidas</span><h3>Perguntas recebidas</h3></div>
+            <select id="questionFilter" class="search-input">
+              <option value="all">Todas</option>
+              <option value="pending">Pendentes</option>
+              <option value="resolved">Resolvidas</option>
+            </select>
+          </div>
+          <div id="questionList" class="admin-question-list">
+            <p class="empty">Nenhuma dúvida ainda.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

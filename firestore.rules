@@ -1,0 +1,58 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null;
+    }
+
+    match /rsvps/{rsvpId} {
+      // Visitantes podem SOMENTE criar uma confirmação.
+      allow create: if
+        request.resource.data.keys().hasOnly([
+          'name', 'guests', 'note', 'createdAt', 'source'
+        ]) &&
+        request.resource.data.name is string &&
+        request.resource.data.name.size() >= 2 &&
+        request.resource.data.name.size() <= 70 &&
+        request.resource.data.guests is int &&
+        request.resource.data.guests >= 1 &&
+        request.resource.data.guests <= 8 &&
+        request.resource.data.note is string &&
+        request.resource.data.note.size() <= 240 &&
+        request.resource.data.source == 'convite-otto';
+
+      // Leitura e alteração somente após login no painel.
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /questions/{questionId} {
+      // Visitantes podem SOMENTE criar uma dúvida.
+      allow create: if
+        request.resource.data.keys().hasOnly([
+          'name', 'topic', 'message', 'status', 'createdAt', 'source'
+        ]) &&
+        request.resource.data.name is string &&
+        request.resource.data.name.size() >= 2 &&
+        request.resource.data.name.size() <= 70 &&
+        request.resource.data.topic is string &&
+        request.resource.data.topic.size() >= 2 &&
+        request.resource.data.topic.size() <= 40 &&
+        request.resource.data.message is string &&
+        request.resource.data.message.size() >= 3 &&
+        request.resource.data.message.size() <= 500 &&
+        request.resource.data.status == 'pending' &&
+        request.resource.data.source == 'convite-otto';
+
+      // Painel administrativo.
+      allow read: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
