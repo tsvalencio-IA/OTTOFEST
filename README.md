@@ -7,6 +7,7 @@ Projeto pronto para GitHub Pages + Firebase Firestore.
 - Convite responsivo para celular.
 - Kirby e Waddle Dee com animações e efeitos de ação.
 - Jogo das 7 estrelas.
+- **3 mini-jogos responsivos no próprio convite**: Caça às Estrelas, Jogo da Memória e Mochila da Festa.
 - Data, horário e local.
 - Botão "Como chegar".
 - Confirmação de presença salva no Firestore.
@@ -16,6 +17,7 @@ Projeto pronto para GitHub Pages + Firebase Firestore.
   - a tela pede **somente a senha**;
   - o e-mail técnico do Firebase fica oculto no código;
   - dashboard de confirmações, total de pessoas e dúvidas;
+- **editar e apagar confirmações de convidados**;
   - dúvidas pendentes/resolvidas;
   - exportação CSV.
 

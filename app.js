@@ -6,7 +6,7 @@ import {
 
 import {
   getFirestore, collection, addDoc, serverTimestamp, onSnapshot,
-  query, orderBy, doc, updateDoc
+  query, orderBy, doc, updateDoc, deleteDoc
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 import {
@@ -55,6 +55,24 @@ const els = {
   rsvpSearch: $("rsvpSearch"),
   questionFilter: $("questionFilter"),
   exportCsv: $("exportCsv"),
+
+  gameButtons: [...document.querySelectorAll("[data-game]")],
+  gameDialog: $("gameDialog"),
+  gameDialogClose: $("gameDialogClose"),
+  gameDialogTitle: $("gameDialogTitle"),
+  gameContent: $("gameContent"),
+
+  guestEditorDialog: $("guestEditorDialog"),
+  guestEditorForm: $("guestEditorForm"),
+  guestEditorClose: $("guestEditorClose"),
+  guestEditorCancel: $("guestEditorCancel"),
+  guestEditId: $("guestEditId"),
+  guestEditName: $("guestEditName"),
+  guestEditGuests: $("guestEditGuests"),
+  guestEditNote: $("guestEditNote"),
+  guestEditorSave: $("guestEditorSave"),
+  guestEditorStatus: $("guestEditorStatus"),
+
   toast: $("toast")
 };
 
@@ -264,6 +282,299 @@ els.questionForm.addEventListener("submit", async (event) => {
   }
 });
 
+
+/* ==========================================================
+   MINI-JOGOS - locais, sem gravar dados no Firebase
+   ========================================================== */
+let gameCleanup = null;
+
+function cleanupGame() {
+  if (typeof gameCleanup === "function") gameCleanup();
+  gameCleanup = null;
+}
+
+function openGame(type) {
+  cleanupGame();
+  if (typeof els.gameDialog.showModal === "function") {
+    if (!els.gameDialog.open) els.gameDialog.showModal();
+  } else {
+    els.gameDialog.setAttribute("open", "");
+  }
+
+  if (type === "stars") renderCatchStars();
+  if (type === "memory") renderMemoryGame();
+  if (type === "bag") renderBagGame();
+}
+
+function closeGame() {
+  cleanupGame();
+  if (typeof els.gameDialog.close === "function") els.gameDialog.close();
+  else els.gameDialog.removeAttribute("open");
+}
+
+els.gameButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    tone(520, .06, 360);
+    openGame(button.dataset.game);
+  });
+});
+els.gameDialogClose.addEventListener("click", closeGame);
+els.gameDialog.addEventListener("click", (event) => {
+  if (event.target === els.gameDialog) closeGame();
+});
+
+function renderCatchStars() {
+  els.gameDialogTitle.textContent = "Kirby • Caça às Estrelas";
+  els.gameContent.innerHTML = `
+    <div class="game-intro">
+      <p>Pegue <strong>10 estrelas</strong> em 20 segundos. Vale toque ou clique.</p>
+      <div class="game-score">
+        <span class="game-pill" id="catchScore">0/10 ⭐</span>
+        <span class="game-pill" id="catchTimer">20s</span>
+      </div>
+    </div>
+    <div class="catch-arena" id="catchArena">
+      <img class="catch-kirby" src="./assets/kirby.jpg" alt="">
+      <button class="catch-target" id="catchTarget" type="button" aria-label="Pegar estrela" hidden>⭐</button>
+    </div>
+    <div class="game-result" id="catchResult">Toque em “Começar”.</div>
+    <button class="game-start" id="catchStart" type="button">Começar</button>
+  `;
+
+  const arena = $("catchArena");
+  const target = $("catchTarget");
+  const scoreEl = $("catchScore");
+  const timerEl = $("catchTimer");
+  const result = $("catchResult");
+  const start = $("catchStart");
+
+  let score = 0;
+  let seconds = 20;
+  let timer = null;
+  let running = false;
+
+  function moveTarget() {
+    const maxX = Math.max(8, arena.clientWidth - 62);
+    const maxY = Math.max(8, arena.clientHeight - 62);
+    const x = 8 + Math.random() * (maxX - 8);
+    const y = 8 + Math.random() * (maxY - 8);
+    target.style.left = `${x}px`;
+    target.style.top = `${y}px`;
+  }
+
+  function finish(won) {
+    running = false;
+    clearInterval(timer);
+    timer = null;
+    target.hidden = true;
+    start.disabled = false;
+    start.textContent = "Jogar novamente";
+    if (won) {
+      result.textContent = "Você pegou as 10 estrelas! ⭐🏆";
+      animate(els.kirbyButton, "celebrate");
+      tone(900, .12, 1180);
+    } else {
+      result.textContent = `Tempo! Você pegou ${score} de 10 estrelas.`;
+    }
+  }
+
+  target.addEventListener("click", () => {
+    if (!running) return;
+    score += 1;
+    scoreEl.textContent = `${score}/10 ⭐`;
+    tone(760, .05, 1030);
+    if (score >= 10) finish(true);
+    else moveTarget();
+  });
+
+  start.addEventListener("click", () => {
+    clearInterval(timer);
+    score = 0;
+    seconds = 20;
+    running = true;
+    scoreEl.textContent = "0/10 ⭐";
+    timerEl.textContent = "20s";
+    result.textContent = "Vai! Pegue as estrelas.";
+    start.disabled = true;
+    target.hidden = false;
+    moveTarget();
+
+    timer = setInterval(() => {
+      seconds -= 1;
+      timerEl.textContent = `${seconds}s`;
+      if (seconds <= 0) finish(score >= 10);
+    }, 1000);
+  });
+
+  gameCleanup = () => clearInterval(timer);
+}
+
+function shuffle(items) {
+  const arr = [...items];
+  for (let i = arr.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function renderMemoryGame() {
+  els.gameDialogTitle.textContent = "Kirby + Waddle Dee • Memória";
+
+  const cards = shuffle([
+    { key: "kirby", type: "img", value: "./assets/kirby.jpg", label: "Kirby" },
+    { key: "kirby", type: "img", value: "./assets/kirby.jpg", label: "Kirby" },
+    { key: "waddle", type: "img", value: "./assets/waddle-dee.jpg", label: "Waddle Dee" },
+    { key: "waddle", type: "img", value: "./assets/waddle-dee.jpg", label: "Waddle Dee" },
+    { key: "star", type: "emoji", value: "⭐", label: "Estrela" },
+    { key: "star", type: "emoji", value: "⭐", label: "Estrela" },
+    { key: "cake", type: "emoji", value: "🎂", label: "Bolo" },
+    { key: "cake", type: "emoji", value: "🎂", label: "Bolo" }
+  ]);
+
+  els.gameContent.innerHTML = `
+    <div class="game-intro">
+      <p>Encontre os <strong>4 pares</strong>. As cartas funcionam por toque ou clique.</p>
+      <div class="game-score">
+        <span class="game-pill" id="memoryMoves">0 jogadas</span>
+        <span class="game-pill" id="memoryPairs">0/4 pares</span>
+      </div>
+    </div>
+    <div class="memory-grid" id="memoryGrid"></div>
+    <div class="game-result" id="memoryResult">Escolha duas cartas.</div>
+    <button class="game-start" id="memoryReset" type="button">Embaralhar novamente</button>
+  `;
+
+  const grid = $("memoryGrid");
+  const movesEl = $("memoryMoves");
+  const pairsEl = $("memoryPairs");
+  const result = $("memoryResult");
+  let opened = [];
+  let locked = false;
+  let moves = 0;
+  let pairs = 0;
+
+  cards.forEach((card, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "memory-card";
+    button.dataset.index = String(index);
+    button.dataset.key = card.key;
+    button.setAttribute("aria-label", "Carta fechada");
+
+    const back = card.type === "img"
+      ? `<img src="${card.value}" alt="${card.label}">`
+      : `<span aria-label="${card.label}">${card.value}</span>`;
+
+    button.innerHTML = `<span class="memory-front">?</span><span class="memory-back">${back}</span>`;
+    grid.appendChild(button);
+
+    button.addEventListener("click", () => {
+      if (locked || button.classList.contains("matched") || button.classList.contains("flipped")) return;
+
+      button.classList.add("flipped");
+      opened.push(button);
+      tone(520, .045, 420);
+
+      if (opened.length !== 2) return;
+      moves += 1;
+      movesEl.textContent = `${moves} ${moves === 1 ? "jogada" : "jogadas"}`;
+
+      const [a, b] = opened;
+      if (a.dataset.key === b.dataset.key) {
+        a.classList.add("matched");
+        b.classList.add("matched");
+        a.classList.remove("flipped");
+        b.classList.remove("flipped");
+        opened = [];
+        pairs += 1;
+        pairsEl.textContent = `${pairs}/4 pares`;
+        tone(760, .07, 1040);
+        if (pairs === 4) {
+          result.textContent = `Você encontrou tudo em ${moves} jogadas! 🏆`;
+        } else {
+          result.textContent = "Par encontrado! Continue.";
+        }
+      } else {
+        locked = true;
+        result.textContent = "Não foi dessa vez. Tente outro par.";
+        setTimeout(() => {
+          a.classList.remove("flipped");
+          b.classList.remove("flipped");
+          opened = [];
+          locked = false;
+        }, 700);
+      }
+    });
+  });
+
+  $("memoryReset").addEventListener("click", renderMemoryGame);
+  gameCleanup = () => {};
+}
+
+function renderBagGame() {
+  els.gameDialogTitle.textContent = "Waddle Dee • Mochila da Festa";
+
+  const items = shuffle([
+    { icon: "🏊", label: "Roupa de banho", ok: true },
+    { icon: "🔥", label: "Algo para o churrasco", ok: true },
+    { icon: "🥤", label: "Bebida preferida", ok: true },
+    { icon: "🎿", label: "Esqui", ok: false },
+    { icon: "📚", label: "Material escolar", ok: false },
+    { icon: "🛼", label: "Patins", ok: false }
+  ]);
+
+  els.gameContent.innerHTML = `
+    <div class="game-intro">
+      <p>Escolha as <strong>3 coisas certas</strong> para levar à festa do Otto.</p>
+      <div class="game-score"><span class="game-pill" id="bagScore">0/3 certas</span></div>
+    </div>
+    <div class="bag-grid" id="bagGrid"></div>
+    <div class="game-result" id="bagResult">Toque nos itens que combinam com o convite.</div>
+    <button class="game-start" id="bagReset" type="button">Recomeçar</button>
+  `;
+
+  const grid = $("bagGrid");
+  const scoreEl = $("bagScore");
+  const result = $("bagResult");
+  let correct = 0;
+
+  items.forEach((item) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "bag-item";
+    button.innerHTML = `<b>${item.icon}</b><span>${item.label}</span>`;
+    grid.appendChild(button);
+
+    button.addEventListener("click", () => {
+      if (button.classList.contains("selected")) return;
+
+      if (item.ok) {
+        button.classList.add("selected");
+        button.disabled = true;
+        correct += 1;
+        scoreEl.textContent = `${correct}/3 certas`;
+        tone(720, .06, 980);
+        if (correct === 3) {
+          result.textContent = "Mochila pronta! Você lembrou de tudo. 🎒⭐";
+          animate(els.waddleButton, "celebrate");
+        } else {
+          result.textContent = "Boa! Falta mais.";
+        }
+      } else {
+        button.classList.add("wrong");
+        result.textContent = "Esse item não estava nas dicas do Waddle Dee.";
+        tone(260, .08, 180);
+        setTimeout(() => button.classList.remove("wrong"), 420);
+      }
+    });
+  });
+
+  $("bagReset").addEventListener("click", renderBagGame);
+  gameCleanup = () => {};
+}
+
+
 /* 3 toques na assinatura em até 1,35 s */
 els.adminSecret.addEventListener("click", () => {
   const now = Date.now();
@@ -401,7 +712,7 @@ function renderRsvps() {
   const rows = currentRsvps.filter((item) => !term || String(item.name || "").toLowerCase().includes(term));
 
   if (!rows.length) {
-    els.rsvpTableBody.innerHTML = '<tr><td colspan="4" class="empty">Nenhuma confirmação encontrada.</td></tr>';
+    els.rsvpTableBody.innerHTML = '<tr><td colspan="5" class="empty">Nenhuma confirmação encontrada.</td></tr>';
     return;
   }
 
@@ -411,8 +722,117 @@ function renderRsvps() {
       <td>${esc(item.guests || 1)}</td>
       <td>${item.note ? esc(item.note) : '<span class="empty">—</span>'}</td>
       <td>${esc(formatDate(item.createdAt))}</td>
+      <td>
+        <div class="table-actions">
+          <button class="row-action edit" type="button" data-edit-rsvp="${esc(item.id)}">Editar</button>
+          <button class="row-action delete" type="button" data-delete-rsvp="${esc(item.id)}">Apagar</button>
+        </div>
+      </td>
     </tr>
   `).join("");
+
+  els.rsvpTableBody.querySelectorAll("[data-edit-rsvp]").forEach((button) => {
+    button.addEventListener("click", () => openGuestEditor(button.dataset.editRsvp));
+  });
+
+  els.rsvpTableBody.querySelectorAll("[data-delete-rsvp]").forEach((button) => {
+    button.addEventListener("click", () => deleteGuest(button.dataset.deleteRsvp, button));
+  });
+}
+
+
+function openGuestEditor(id) {
+  const item = currentRsvps.find((row) => row.id === id);
+  if (!item) {
+    showToast("Confirmação não encontrada.");
+    return;
+  }
+
+  els.guestEditId.value = id;
+  els.guestEditName.value = item.name || "";
+  els.guestEditGuests.value = String(Number(item.guests) || 1);
+  els.guestEditNote.value = item.note || "";
+  setStatus(els.guestEditorStatus, "");
+
+  if (typeof els.guestEditorDialog.showModal === "function") {
+    if (!els.guestEditorDialog.open) els.guestEditorDialog.showModal();
+  } else {
+    els.guestEditorDialog.setAttribute("open", "");
+  }
+}
+
+function closeGuestEditor() {
+  if (typeof els.guestEditorDialog.close === "function") els.guestEditorDialog.close();
+  else els.guestEditorDialog.removeAttribute("open");
+}
+
+els.guestEditorClose.addEventListener("click", closeGuestEditor);
+els.guestEditorCancel.addEventListener("click", closeGuestEditor);
+els.guestEditorDialog.addEventListener("click", (event) => {
+  if (event.target === els.guestEditorDialog) closeGuestEditor();
+});
+
+els.guestEditorForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  if (!db || !auth?.currentUser) {
+    setStatus(els.guestEditorStatus, "Sessão administrativa não encontrada.", "error");
+    return;
+  }
+
+  const id = els.guestEditId.value;
+  const name = els.guestEditName.value.trim().replace(/\s+/g, " ");
+  const guests = Number.parseInt(els.guestEditGuests.value, 10);
+  const note = els.guestEditNote.value.trim();
+
+  if (name.length < 2) {
+    els.guestEditName.focus();
+    setStatus(els.guestEditorStatus, "Digite um nome válido.", "error");
+    return;
+  }
+
+  if (!Number.isInteger(guests) || guests < 1 || guests > 8) {
+    setStatus(els.guestEditorStatus, "Quantidade inválida.", "error");
+    return;
+  }
+
+  els.guestEditorSave.disabled = true;
+  setStatus(els.guestEditorStatus, "Salvando...");
+  try {
+    await updateDoc(doc(db, "rsvps", id), {
+      name,
+      guests,
+      note: note.slice(0, 240)
+    });
+    setStatus(els.guestEditorStatus, "Alterações salvas.", "success");
+    showToast("Convidado atualizado. ✅");
+    setTimeout(closeGuestEditor, 350);
+  } catch (error) {
+    console.error(error);
+    setStatus(els.guestEditorStatus, "Não foi possível salvar.", "error");
+  } finally {
+    els.guestEditorSave.disabled = false;
+  }
+});
+
+async function deleteGuest(id, button) {
+  const item = currentRsvps.find((row) => row.id === id);
+  if (!item || !db || !auth?.currentUser) return;
+
+  const confirmed = window.confirm(
+    `Apagar a confirmação de "${item.name}"?\n\nEssa ação remove o registro do banco de dados.`
+  );
+  if (!confirmed) return;
+
+  button.disabled = true;
+  try {
+    await deleteDoc(doc(db, "rsvps", id));
+    showToast("Confirmação apagada.");
+  } catch (error) {
+    console.error(error);
+    showToast("Não foi possível apagar a confirmação.");
+    button.disabled = false;
+  }
 }
 
 function renderQuestions() {

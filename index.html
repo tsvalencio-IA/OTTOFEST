@@ -79,6 +79,59 @@
       </div>
     </section>
 
+
+    <section class="games-card" id="jogos">
+      <div class="section-eyebrow">Hora de brincar</div>
+      <div class="games-heading">
+        <div>
+          <h2>Joguinhos do convite 🎮</h2>
+          <p>Funcionam por toque no celular e por clique no computador.</p>
+        </div>
+        <span class="games-badge">3 desafios</span>
+      </div>
+
+      <div class="game-grid">
+        <article class="game-teaser">
+          <div class="game-art kirby-art">
+            <img src="./assets/kirby.jpg" alt="">
+            <span>⭐</span>
+          </div>
+          <div>
+            <small>Kirby</small>
+            <h3>Caça às Estrelas</h3>
+            <p>Pegue 10 estrelas antes do tempo acabar.</p>
+          </div>
+          <button type="button" class="game-open" data-game="stars">Jogar</button>
+        </article>
+
+        <article class="game-teaser">
+          <div class="game-art duo-art">
+            <img src="./assets/kirby.jpg" alt="">
+            <img src="./assets/waddle-dee.jpg" alt="">
+          </div>
+          <div>
+            <small>Kirby + Waddle Dee</small>
+            <h3>Jogo da Memória</h3>
+            <p>Encontre todos os pares com o menor número de jogadas.</p>
+          </div>
+          <button type="button" class="game-open" data-game="memory">Jogar</button>
+        </article>
+
+        <article class="game-teaser">
+          <div class="game-art waddle-art">
+            <img src="./assets/waddle-dee.jpg" alt="">
+            <span>🎒</span>
+          </div>
+          <div>
+            <small>Waddle Dee</small>
+            <h3>Mochila da Festa</h3>
+            <p>Escolha as 3 coisas certas para levar ao aniversário.</p>
+          </div>
+          <button type="button" class="game-open" data-game="bag">Jogar</button>
+        </article>
+      </div>
+    </section>
+
     <section class="rsvp-card" id="confirmar">
       <div class="section-eyebrow">Confirmação</div>
       <h2>Você vai participar? 💗</h2>
@@ -154,6 +207,20 @@
     </footer>
   </main>
 
+
+  <dialog id="gameDialog" class="game-dialog">
+    <div class="game-modal">
+      <div class="game-modal-head">
+        <div>
+          <span class="section-eyebrow">Desafio do Otto</span>
+          <h2 id="gameDialogTitle">Joguinho</h2>
+        </div>
+        <button type="button" class="icon-button" id="gameDialogClose" aria-label="Fechar jogo">✕</button>
+      </div>
+      <div id="gameContent" class="game-content"></div>
+    </div>
+  </dialog>
+
   <dialog id="adminDialog" class="admin-dialog">
     <div class="admin-shell">
       <div class="admin-topbar">
@@ -206,8 +273,8 @@
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Nome</th><th>Pessoas</th><th>Recado</th><th>Quando</th></tr></thead>
-              <tbody id="rsvpTableBody"><tr><td colspan="4" class="empty">Nenhuma confirmação ainda.</td></tr></tbody>
+              <thead><tr><th>Nome</th><th>Pessoas</th><th>Recado</th><th>Quando</th><th>Ações</th></tr></thead>
+              <tbody id="rsvpTableBody"><tr><td colspan="5" class="empty">Nenhuma confirmação ainda.</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -227,6 +294,51 @@
         </div>
       </section>
     </div>
+  </dialog>
+
+
+  <dialog id="guestEditorDialog" class="guest-editor-dialog">
+    <form id="guestEditorForm" class="guest-editor-card">
+      <div class="guest-editor-head">
+        <div>
+          <span class="admin-kicker">Editar confirmação</span>
+          <h3>Dados do convidado</h3>
+        </div>
+        <button type="button" class="icon-button" id="guestEditorClose" aria-label="Fechar editor">✕</button>
+      </div>
+
+      <input type="hidden" id="guestEditId">
+
+      <label>
+        <span>Nome</span>
+        <input id="guestEditName" maxlength="70" required>
+      </label>
+
+      <label>
+        <span>Quantidade de pessoas</span>
+        <select id="guestEditGuests" required>
+          <option value="1">1 pessoa</option>
+          <option value="2">2 pessoas</option>
+          <option value="3">3 pessoas</option>
+          <option value="4">4 pessoas</option>
+          <option value="5">5 pessoas</option>
+          <option value="6">6 pessoas</option>
+          <option value="7">7 pessoas</option>
+          <option value="8">8 pessoas</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Recado</span>
+        <textarea id="guestEditNote" maxlength="240" rows="3"></textarea>
+      </label>
+
+      <div class="guest-editor-actions">
+        <button type="button" class="mini-button" id="guestEditorCancel">Cancelar</button>
+        <button type="submit" class="action dark" id="guestEditorSave">Salvar alterações</button>
+      </div>
+      <div class="form-status" id="guestEditorStatus" role="status" aria-live="polite"></div>
+    </form>
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
